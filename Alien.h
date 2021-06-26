@@ -11,13 +11,13 @@ class Alien : public Entity
 {
 public:
 	Alien();
-	Alien(Rndr& rndr, int x, int y, int speed);
+	Alien(Rndr& rndr, int x, int y, int speed, int projSpeed);
 	~Alien();
 
 	void init(Rndr& rndr);
-	void setMovDir(MovDir dir) { drDir = dir; }
-	MovDir getMovDir() { return drDir; }
+	void setMovDir(MovDir dir) { alDir = dir; }
+	MovDir getMovDir() { return alDir; }
 
 private:
-	MovDir drDir = MovDir::RIGHT;
+	MovDir alDir = MovDir::RIGHT;
 };

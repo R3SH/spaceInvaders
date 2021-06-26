@@ -11,7 +11,7 @@ class Drone : public Entity
 {
 public:
 	Drone();
-	Drone(Rndr& rndr, int x, int y, int speed);
+	Drone(Rndr& rndr, int x, int y, int speed, int projSpeed);
 	~Drone();
 
 	void init(Rndr& rndr);

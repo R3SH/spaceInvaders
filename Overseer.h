@@ -11,14 +11,14 @@ class Overseer : public Entity
 {
 public:
 	Overseer();
-	Overseer(Rndr& rndr, int x, int y, int speed);
+	Overseer(Rndr& rndr, int x, int y, int speed, int projSpeed);
 	~Overseer();
 
 	void init(Rndr& rndr);
-	void setMovDir(MovDir dir) { drDir = dir; }
-	MovDir getMovDir() { return drDir; }
+	void setMovDir(MovDir dir) { overDir = dir; }
+	MovDir getMovDir() { return overDir; }
 
 private:
-	MovDir drDir = MovDir::RIGHT;
+	MovDir overDir = MovDir::RIGHT;
 
 };

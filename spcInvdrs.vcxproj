@@ -71,23 +71,23 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2_ttf-2.0.15\include;C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2_image-2.0.5\include;C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2-2.0.14\include;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2_ttf-2.0.15\lib\x64;C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2_image-2.0.5\lib\x64;C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2-2.0.14\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2_image-2.0.5\include;C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2_ttf-2.0.15\include;C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2-2.0.14\include;C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2_mixer-2.0.4\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2_mixer-2.0.4\lib\x64;C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2_ttf-2.0.15\lib\x64;C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2_image-2.0.5\lib\x64;C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2-2.0.14\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2_ttf-2.0.15\include;C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2_image-2.0.5\include;C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2-2.0.14\include;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2_ttf-2.0.15\lib\x64;C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2_image-2.0.5\lib\x64;C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2-2.0.14\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2_image-2.0.5\include;C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2_ttf-2.0.15\include;C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2-2.0.14\include;C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2_mixer-2.0.4\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2_mixer-2.0.4\lib\x64;C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2_ttf-2.0.15\lib\x64;C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2_image-2.0.5\lib\x64;C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2-2.0.14\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2_ttf-2.0.15\include;C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2_image-2.0.5\include;C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2-2.0.14\include;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2_ttf-2.0.15\lib\x64;C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2_image-2.0.5\lib\x64;C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2-2.0.14\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2_image-2.0.5\include;C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2_ttf-2.0.15\include;C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2-2.0.14\include;C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2_mixer-2.0.4\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2_mixer-2.0.4\lib\x64;C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2_ttf-2.0.15\lib\x64;C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2_image-2.0.5\lib\x64;C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2-2.0.14\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2_ttf-2.0.15\include;C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2_image-2.0.5\include;C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2-2.0.14\include;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2_ttf-2.0.15\lib\x64;C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2_image-2.0.5\lib\x64;C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2-2.0.14\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2_image-2.0.5\include;C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2_ttf-2.0.15\include;C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2-2.0.14\include;C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2_mixer-2.0.4\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2_mixer-2.0.4\lib\x64;C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2_ttf-2.0.15\lib\x64;C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2_image-2.0.5\lib\x64;C:\Users\R3SH\Desktop\Comp.Sci\Uni\ЯВУ2021\SDL2-devel-2.0.14-VC-devLibs\SDL2-2.0.14\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -99,7 +99,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;SDL2_mixer.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -112,7 +112,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;SDL2_mixer.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -129,7 +129,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;SDL2_mixer.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -146,7 +146,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;SDL2_mixer.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

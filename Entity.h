@@ -12,7 +12,10 @@ public:
 	int getSpritesN() { return sprN; }
 	int getPositionX() { return m_pos.x; }
 	int getPositionY() { return m_pos.y; }
+	int getWidth() { return m_pos.w; }
+	int getHeight() { return m_pos.h; }
 	int getSpeed() { return MOVEMENT_SPEED; }
+	int getProjSpeed() { return projectileSpeed; }
 	int getLBound() { return lBound; }
 	int getRBound() { return rBound; }
 	int getDownBound() { return downBound; };
@@ -29,6 +32,8 @@ protected:
 	int START_YPOS;
 	//Movement speed of entity
 	int MOVEMENT_SPEED;
+	//Projectile Speed
+	int projectileSpeed;
 	//MovementBoundaries
 	int lBound, rBound;
 	int topBound, downBound;
