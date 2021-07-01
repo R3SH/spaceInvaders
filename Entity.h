@@ -6,6 +6,7 @@ class Entity
 {
 public:
 	Entity();
+	Entity(int x, int y);
 	~Entity();
 
 	SDL_Rect getPosition() { return m_pos; }
@@ -22,14 +23,12 @@ public:
 	void setXPos(int xPos) { m_pos.x = xPos; }
 	void setYPos(int yPos) { m_pos.y = yPos; }
 	void frameUpdate(int numberOfSprites);
+	void explUpdate(int numberOfSprites);
 
 protected:
 	SDL_Rect m_pos;
 	//Current sprite
 	int sprN;
-	//Starting position of entity
-	int START_XPOS;
-	int START_YPOS;
 	//Movement speed of entity
 	int MOVEMENT_SPEED;
 	//Projectile Speed

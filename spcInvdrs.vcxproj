@@ -151,6 +151,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Alien.cpp" />
+    <ClCompile Include="Barrier.cpp" />
+    <ClCompile Include="Button.cpp" />
     <ClCompile Include="Drone.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Game.cpp" />
@@ -164,6 +166,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Alien.h" />
+    <ClInclude Include="Barrier.h" />
+    <ClInclude Include="Button.h" />
     <ClInclude Include="Drone.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Game.h" />

@@ -26,9 +26,90 @@ Resource::~Resource()
 	scoreBoardFile.close();
 }
 
+void Resource::setName(std::string* name, int score)
+{
+	int tmp = INT_MAX, indx = -1;			//NOOOOOOOOOOOOOOOO
+	std::string tmps = u8"";
+	std::string tmpNumb;
+	std::cout << scoreBoardName << std::endl;
+	scoreBoardFile.close();
+	//scoreBoardFile.open(scoreBoardName.c_str(), std::ios::trunc);
+	std::fstream wFile(scoreBoardName);
+	tmps = (*name);
+
+	if (strNumb == N_SC_BOARD)
+	{
+		for (int i = 0; i < strNumb; ++i)
+		{
+			if (tmp <= scoresTable[i])
+			{
+				tmp = scoresTable[i];
+				indx = i;
+				std::cout << "Index " << tmp << std::endl;
+			}
+		}
+		if (indx != -1)
+		{
+			scoreStr[indx] = tmps;
+			scoresTable[indx] = score;
+			std::cout << "Passed name: " << scoreStr[indx] << "score: " << scoresTable[indx] << std::endl;
+		}
+	}
+	else
+	{
+		scoreStr[strNumb] = tmps;
+		scoresTable[strNumb] = score;
+		++strNumb;
+		std::cout << "Passed name: " << scoreStr[strNumb] << "score: " << scoresTable[strNumb] << std::endl;
+	}
+
+	for (int i = 0; i < strNumb - 1; ++i)
+	{
+		for (int j = 0; j < strNumb - i - 1; ++j)
+		{
+			if (scoresTable[j] > scoresTable[j + 1])
+			{
+				tmp = scoresTable[j];
+				tmps = scoreStr[j];
+				scoresTable[j] = scoresTable[j + 1];
+				scoreStr[j] = scoreStr[j + 1];
+				scoresTable[j + 1] = tmp;
+				scoreStr[j + 1] = tmps; 
+			}
+
+		}
+	}
+
+	for (int i = strNumb - 1; i >= 0; --i)
+	{
+		std::cout << scoreStr[i] << '\t' << scoresTable[i] << std::endl;
+		wFile << scoreStr[i] << '\n' << scoresTable[i] << '\n';
+		//scoreStr[strNumb] = u8"";
+		//getline(scoreBoardFile, scoreStr[strNumb]);
+		std::cout << "i " << i << '\t' << scoreStr[strNumb] << std::endl;
+	}
+
+	wFile.seekg(0, std::ios::beg);
+
+	for (int i = 0; i < strNumb; ++i)
+	{
+		scoreStr[i] = u8"";
+		getline(wFile, scoreStr[i]);
+		getline(wFile, tmps);
+		scoresTable[i] = std::stoi(tmps);
+		std::cout << "strNumb = " << strNumb << " name: " << scoreStr[i] << "score: " << scoresTable[i] << " i: " << i << " i: " << i << std::endl;
+	}
+
+
+	wFile.close();
+}
+
 bool Resource::load(Rndr& rndr)
 {
+	int tmp;
+	std::string tmps;
 	SDL_Surface* tmpsrfc;
+
 	if (TTF_Init() < 0)
 	{
 		std::cout << "Error initializing SDL_ttf: " << TTF_GetError() << std::endl;
@@ -43,7 +124,7 @@ bool Resource::load(Rndr& rndr)
 	}
 
 	//SDL_RWops* rwop = SDL_RWFromFile("spritesheet.png", "rb");
-	tmpsrfc = IMG_Load("spritesheet.png");
+	tmpsrfc = IMG_Load("imgs/spritesheet.png");
 	spriteSheet = SDL_CreateTextureFromSurface(rndr.getRenderer(), tmpsrfc);
 	if (spriteSheet == nullptr)
 	{
@@ -52,22 +133,55 @@ bool Resource::load(Rndr& rndr)
 	}
 	SDL_FreeSurface(tmpsrfc);
 
-	tmpsrfc = IMG_Load("background.png");
+	tmpsrfc = IMG_Load("imgs/background.png");
 	background = SDL_CreateTextureFromSurface(rndr.getRenderer(), tmpsrfc);
 	if (background == nullptr)
 	{
 		std::cout << "Failed to load background" << SDL_GetError() << std::endl;
 		return false;
 	}
+	SDL_FreeSurface(tmpsrfc);
+
+	tmpsrfc = IMG_Load("imgs/arrowKeys.png");
+	arrowKeys = SDL_CreateTextureFromSurface(rndr.getRenderer(), tmpsrfc);
+	if (arrowKeys == nullptr)
+	{
+		std::cout << "Failed to load arrowKeys" << SDL_GetError() << std::endl;
+		return false;
+	}
+	SDL_FreeSurface(tmpsrfc);
+
+	tmpsrfc = IMG_Load("imgs/spaceBar.png");
+	spaceBar = SDL_CreateTextureFromSurface(rndr.getRenderer(), tmpsrfc);
+	if (spaceBar == nullptr)
+	{
+		std::cout << "Failed to load spaceBar" << SDL_GetError() << std::endl;
+		return false;
+	}
+	SDL_FreeSurface(tmpsrfc);
+
+	tmpsrfc = IMG_Load("imgs/escKey.png");
+	escKey = SDL_CreateTextureFromSurface(rndr.getRenderer(), tmpsrfc);
+	if (escKey == nullptr)
+	{
+		std::cout << "Failed to load escKey" << SDL_GetError() << std::endl;
+		return false;
+	}
+	SDL_FreeSurface(tmpsrfc);
 
 	scoreBoardName = "scoreBoard.txt";
 	scoreBoardFile.open(scoreBoardName.c_str());
-	for (int i = 0; i < 10 && scoreBoardFile; ++i)
+	for (strNumb = 0; strNumb < N_SC_BOARD && !scoreBoardFile.eof(); ++strNumb)
 	{
-		scoreStr[i] = u8"";
-		getline(scoreBoardFile, scoreStr[i]);
-		std::cout << scoreStr[i] << std::endl;
+		scoreStr[strNumb] = u8"";
+		getline(scoreBoardFile, scoreStr[strNumb]);
+		getline(scoreBoardFile, tmps);
+		scoresTable[strNumb] = std::stoi(tmps);
+		//scoreBoardFile >> scoresTable[strNumb];
+		std::cout << scoreStr[strNumb] << '\t' << scoresTable[strNumb] << std::endl;
 	}
+
+	--strNumb;
 
 	menuPress = Mix_LoadWAV("sounds/menuPress.wav");
 	if (menuPress == nullptr)
@@ -141,8 +255,19 @@ bool Resource::load(Rndr& rndr)
 		std::cout << "Failed to load sound effect! SDL_mixer Error: " << Mix_GetError() << std::endl;
 		return false;
 	}
+	barrierHit = Mix_LoadWAV("sounds/barrierHit.wav");
+	if (barrierHit == nullptr)
+	{
+		std::cout << "Failed to load sound effect! SDL_mixer Error: " << Mix_GetError() << std::endl;
+		return false;
+	}
+	barrierDestr = Mix_LoadWAV("sounds/barrierDestr.wav");
+	if (barrierDestr == nullptr)
+	{
+		std::cout << "Failed to load sound effect! SDL_mixer Error: " << Mix_GetError() << std::endl;
+		return false;
+	}
 
-	SDL_FreeSurface(tmpsrfc);
 	return true;
 }
 

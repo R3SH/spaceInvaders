@@ -4,14 +4,18 @@
 #include "Renderer.h"
 #include "Resource.h"
 #include "Sprites.h"
+#include "Button.h"
 #include "Entity.h"
 #include "Player.h"
 #include "Drone.h"
 #include "Alien.h"
 #include "Overseer.h"
 #include "Laser.h"
+#include "Barrier.h"
 
+#define N_MENU 4
 #define N 4
+#define BUTTON_OFFSET 20
 
 Game::Game()
 {
@@ -23,7 +27,16 @@ Game::~Game()
 
 void Game::menu(Rndr& rndr, Resource& src, Sprites& sprites)
 {
-	int ch = 0;
+	int mouseX, mouseY;
+	int ch = 0, prevCh = 0;
+	std::string buttons[N_MENU] = {
+		u8"Начать  игру",
+		u8"Таблица  лидеров",
+		u8"Справка",
+		u8"Выход"
+	};
+	Button rButtons[N_MENU];
+	SDL_Rect tmpRect;
 	SDL_Event e;
 
 	if (!rndr.init())
@@ -38,10 +51,21 @@ void Game::menu(Rndr& rndr, Resource& src, Sprites& sprites)
 	}
 	sprites.init();
 	
+	k_exit = false;
+	src.setCharSize(24);
+
+	for (unsigned int i = 0; i < N_MENU; ++i)
+	{
+		tmpRect.w = src.getCharSize()* buttons[i].length();
+		tmpRect.h = 1.666 * src.getCharSize();
+		tmpRect.x = (rndr.getScreenW() - src.getCharSize() * buttons[i].length()) / 2;
+		tmpRect.y = rndr.getScreenH() / 2 - 3 * tmpRect.h / 2 + i * (tmpRect.h + BUTTON_OFFSET) - BUTTON_OFFSET;
+		rButtons[i].setButtonPos(tmpRect);
+	}
 
 	while (!k_exit)
 	{
-		//Keyboard input
+		//Ввод
 		while (SDL_PollEvent(&e) != 0)
 		{
 			if (e.type == SDL_KEYDOWN)
@@ -54,21 +78,7 @@ void Game::menu(Rndr& rndr, Resource& src, Sprites& sprites)
 					break;
 				case SDLK_RETURN:
 					Mix_PlayChannel(-1, src.getSndMenuPress(), 0);
-					switch (ch)
-					{
-					case 0:		//Start game
-						start(rndr, src, sprites);
-						break;
-					case 1:		//Leaderboard
-						scoreBoard(rndr, src);
-						break;
-					case 2:		//About
-						about(rndr, src, sprites);
-						break;
-					case 3:		//Exit
-						k_exit = true;
-						break;
-					}
+					k_exit = switchMenu(rndr, src, sprites, ch);
 					break;
 				case SDLK_DOWN:
 					Mix_PlayChannel(-1, src.getSndMenuSwitch(), 0);
@@ -86,19 +96,40 @@ void Game::menu(Rndr& rndr, Resource& src, Sprites& sprites)
 					break;
 				}
 			}
+			if (e.type == SDL_MOUSEMOTION || e.type == SDL_MOUSEBUTTONDOWN || e.type == SDL_MOUSEBUTTONUP)
+			{
+				SDL_GetMouseState(&mouseX, &mouseY);
+				std::cout << "M:\t" << mouseX << '\t' << mouseY << "\tCH:\t" << ch << std::endl;
+				if (handleMouse(&e, &ch, mouseX, mouseY, rButtons, N_MENU))
+				{
+					std::cout << "M:\t" << mouseX << '\t' << mouseY << "\tCH:\t" << ch << std::endl;
+					k_exit = switchMenu(rndr, src, sprites, ch);
+				}
+
+				if(ch != prevCh)
+					Mix_PlayChannel(-1, src.getSndMenuSwitch(), 0);
+				prevCh = ch;
+			}
 		}
 
-		rndr.renderMenu(src, ch);
+		rndr.renderMenu(src, ch, buttons, rButtons, N_MENU);
 		SDL_Delay(16);
 	}
 }
 
-void Game::scoreBoard(Rndr& rndr, Resource& src)
+void Game::scoreBoard(Rndr& rndr, Resource& src)			//Таблица лидеров
 {
-	bool exit = false;
+	int ch = -1, prevCh = -1;
+	int mouseX, mouseY;
+	std::string tmps = u8"Назад";
+	Button rButton;
 	SDL_Event e;
 
-	while (!exit)
+	k_exit = false;
+	src.setCharSize(24);
+	rButton.setButtonPos(50, rndr.getScreenH() - 50, tmps.length() * src.getCharSize(), 1.666 * src.getCharSize());
+
+	while (!k_exit)
 	{
 		while (SDL_PollEvent(&e) != 0)
 		{
@@ -107,24 +138,49 @@ void Game::scoreBoard(Rndr& rndr, Resource& src)
 				if (e.key.keysym.sym == SDLK_ESCAPE)
 				{
 					Mix_PlayChannel(-1, src.getSndMenuBack(), 0);
-					exit = true;
+					k_exit = true;
 				}
+			}
+
+			if (e.type == SDL_MOUSEMOTION || e.type == SDL_MOUSEBUTTONDOWN || e.type == SDL_MOUSEBUTTONUP)
+			{
+				SDL_GetMouseState(&mouseX, &mouseY);
+				std::cout << "M:\t" << mouseX << '\t' << mouseY << "\tCH:\t" << ch << std::endl;
+				if (handleMouse(&e, &ch, mouseX, mouseY, &rButton, 1))
+				{
+					std::cout << "M:\t" << mouseX << '\t' << mouseY << "\tCH:\t" << ch << std::endl;
+					if (ch == 0)
+					{
+						Mix_PlayChannel(-1, src.getSndMenuBack(), 0);
+						k_exit = true;
+					}
+				}
+
+				if (ch != prevCh)
+					Mix_PlayChannel(-1, src.getSndMenuSwitch(), 0);
+				prevCh = ch;
 			}
 		}
 
-		rndr.renderScoreBoard(src);
+		rndr.renderScoreBoard(src, &rButton, &tmps, ch);
 		SDL_Delay(32);
 	}
 }
 
-void Game::about(Rndr& rndr, Resource& src, Sprites& sprites)
+void Game::about(Rndr& rndr, Resource& src, Sprites& sprites)			//О игре
 {
+	int ch = -1, prevCh = -1;
 	int animCntr = 0;
-	bool abExit = false;
+	int mouseX, mouseY;
 	SDL_Event e;
+	std::string tmps = u8"Назад";
+	Button rButton;
 
+	k_exit = false;
+	src.setCharSize(24);
+	rButton.setButtonPos(50, rndr.getScreenH() - 50, tmps.length() * src.getCharSize(), 1.666 * src.getCharSize());
 
-	while (!abExit)
+	while (!k_exit)
 	{
 		while (SDL_PollEvent(&e) != 0)
 		{
@@ -133,12 +189,31 @@ void Game::about(Rndr& rndr, Resource& src, Sprites& sprites)
 				if (e.key.keysym.sym == SDLK_ESCAPE)
 				{
 					Mix_PlayChannel(-1, src.getSndMenuBack(), 0);
-					abExit = true;
+					k_exit = true;
 				}
+			}
+
+			if (e.type == SDL_MOUSEMOTION || e.type == SDL_MOUSEBUTTONDOWN || e.type == SDL_MOUSEBUTTONUP)
+			{
+				SDL_GetMouseState(&mouseX, &mouseY);
+				std::cout << "M:\t" << mouseX << '\t' << mouseY << "\tCH:\t" << ch << std::endl;
+				if (handleMouse(&e, &ch, mouseX, mouseY, &rButton, 1))
+				{
+					std::cout << "M:\t" << mouseX << '\t' << mouseY << "\tCH:\t" << ch << std::endl;
+					if (ch == 0)
+					{
+						Mix_PlayChannel(-1, src.getSndMenuBack(), 0);
+						k_exit = true;
+					}
+				}
+
+				if (ch != prevCh)
+					Mix_PlayChannel(-1, src.getSndMenuSwitch(), 0);
+				prevCh = ch;
 			}
 		}
 
-		rndr.renderAbout(src, sprites, animCntr);
+		rndr.renderAbout(src, sprites, &rButton, &tmps, animCntr, ch);
 		SDL_Delay(32);
 	}
 }
@@ -149,21 +224,25 @@ void Game::start(Rndr& rndr, Resource& src, Sprites& sprites)
 	int shootDelay = 0;
 	int addedLifes = 0;
 	int enemyMovementSpeed = 1, enemyProjectileSpeed = 2;
-	bool endGame = false;
 	SDL_Event e;
 	Player plr;
 	std::vector<Drone> drones;
 	std::vector<Alien> aliens;
 	std::vector<Overseer> overseers;
+	std::vector<Entity> explosions;
 	std::vector<Laser> plrProjectiles;
 	std::vector<Laser> enemyProjectiles;
+	std::vector<Barrier> barriers;
 
-	//Initialization
+	//Инициализация
+	k_exit = false;
 	plr.init(rndr, src);
 	addEnemies(rndr, drones, aliens, overseers, enemyMovementSpeed, enemyProjectileSpeed);
 	Mix_PlayChannel(-1, src.getSndEnemySpawn(), 0);
+	for (int i = 0; i < 4; ++i)
+		barriers.push_back(Barrier(rndr.getScreenW() / 2 - 260 + 32 + i * (66 + 64), rndr.getScreenH() - 48 - 80, 60));
 
-	while (!endGame)
+	while (!k_exit)
 	{
 		while (SDL_PollEvent(&e) != 0)
 		{
@@ -172,7 +251,9 @@ void Game::start(Rndr& rndr, Resource& src, Sprites& sprites)
 				if (e.key.keysym.sym == SDLK_ESCAPE)
 				{
 					Mix_PlayChannel(-1, src.getSndMenuPress(), 0);
-					endGame = pause(rndr, src);
+					k_exit = pause(rndr, src);
+					if (k_exit)
+						return;
 				}
 				else
 				{
@@ -189,7 +270,7 @@ void Game::start(Rndr& rndr, Resource& src, Sprites& sprites)
 
 		movEnemies(drones, aliens, overseers);
 		movProjectiles(plrProjectiles, enemyProjectiles);
-		checkProjectiles(rndr, plr, src, plrProjectiles, enemyProjectiles, drones, aliens, overseers);
+		checkProjectiles(rndr, plr, src, plrProjectiles, enemyProjectiles, drones, aliens, overseers, explosions, barriers);
 		plr.boundsCheck();
 		if (frameCntr % 10 == 0)
 		{
@@ -216,25 +297,44 @@ void Game::start(Rndr& rndr, Resource& src, Sprites& sprites)
 				addedLifes = plr.getScore() / 1000;
 				Mix_PlayChannel(-1, src.getSndPlrLiveUp(), 0);
 			}
-			animUpdate(sprites, drones, aliens, overseers, enemyProjectiles);
+			animUpdate(sprites, drones, aliens, overseers, enemyProjectiles, explosions);
 			++frameCntr;
 		}
 		else
 			++frameCntr;
-		rndr.renderGame(src, sprites, plr, drones, aliens, overseers, plrProjectiles, enemyProjectiles);
+		if (plr.dead())
+		{
+			k_exit = true;
+			Mix_PlayChannel(-1, src.getSndPlrDeath(), 0);
+		}
+		rndr.renderGame(src, sprites, plr, drones, aliens, overseers, plrProjectiles, enemyProjectiles, explosions, barriers);
 		++shootDelay;			//32
 		SDL_Delay(16);
+	}
+
+	saveScore(rndr, src, plr.getScore());
+}
+
+void Game::saveScore(Rndr& rndr, Resource& src, int score)
+{
+	std::string name = u8"";
+
+	while(name.empty())
+	{
+		rndr.renderSaveScoreBoard(src);
+		std::cin >> name;
+		src.setName(&name, score);
 	}
 }
 
 bool Game::pause(Rndr& rndr, Resource& src)
 {
-	bool exit = false;
+	k_exit = false;
 	SDL_Event e;
 
 	rndr.renderPause(src);
 
-	while (!exit)
+	while (!k_exit)
 	{
 		while (SDL_PollEvent(&e) != 0)
 		{
@@ -255,6 +355,53 @@ bool Game::pause(Rndr& rndr, Resource& src)
 
 		SDL_Delay(32);
 	}
+}
+
+bool Game::switchMenu(Rndr& rndr, Resource& src, Sprites& sprites, int ch)
+{
+	switch (ch)
+	{
+	case 0:		//Начало игры
+		start(rndr, src, sprites);
+		break;
+	case 1:		//Таблица лидеров
+		scoreBoard(rndr, src);
+		break;
+	case 2:		//О игре
+		about(rndr, src, sprites);
+		break;
+	case 3:		//Выход
+		return true;
+		break;
+	}
+	
+	return false;
+}
+
+bool Game::handleMouse(SDL_Event* e, int* prevCh, int mouseX, int mouseY, Button* buttonPos, int numbOfButtons)
+{
+	SDL_Rect tmpRect;
+
+	for (int i = 0; i < numbOfButtons; ++i)
+	{
+		tmpRect = *buttonPos[i].getButtonPos();
+		if (mouseX >= tmpRect.x && mouseX <= (tmpRect.x + tmpRect.w))
+		{
+			if (mouseY >= tmpRect.y && mouseY <= (tmpRect.y + tmpRect.h))
+			{
+				(*prevCh) = i;
+
+				if ((*e).type == SDL_MOUSEBUTTONDOWN)
+				{
+					std::cout << "CHANGE";
+					if ((*e).button.button == SDL_BUTTON_LEFT)
+						return true;
+				}
+			}
+		}
+	}
+
+	return false;
 }
 
 void Game::addEnemies(Rndr& rndr, std::vector<Drone>& drones, std::vector<Alien>& aliens,
@@ -588,9 +735,10 @@ void Game::enemyShoot(Rndr& rndr, Player& plr, Resource& src, std::vector<Laser>
 		{
 			freeLine = true;
 
-			//line of fire check
 			if (!drones.empty())
 			{
+				shootPos = overseers[enemy].getPositionX() + (overseers[enemy].getWidth() / 2) - 3;
+				//line of fire check
 				for (int dr = 0; dr < drones.size(); ++dr)
 				{
 					if ((shootPos >= drones[dr].getPositionX()) && (shootPos <= drones[dr].getPositionX() + drones[dr].getWidth()) ||
@@ -600,8 +748,10 @@ void Game::enemyShoot(Rndr& rndr, Player& plr, Resource& src, std::vector<Laser>
 			}
 			if (!aliens.empty())
 			{
+				//line of fire check
 				for (int al = 0; al < aliens.size(); ++al)
 				{
+					shootPos = overseers[enemy].getPositionX() + (overseers[enemy].getWidth() / 2) - 3;
 					if ((shootPos >= aliens[al].getPositionX()) && (shootPos <= aliens[al].getPositionX() + aliens[al].getWidth()) ||
 						((shootPos + 3) >= aliens[al].getPositionX()) && ((shootPos + 3) <= aliens[al].getPositionX() + aliens[al].getWidth()))
 						freeLine = false;
@@ -639,14 +789,15 @@ void Game::enemyShoot(Rndr& rndr, Player& plr, Resource& src, std::vector<Laser>
 	}
 }
 
-void Game::checkProjectiles(Rndr& rndr, Player& plr, Resource& src, std::vector<Laser>& plrProjectiles, std::vector<Laser>& enemyProjectiles, std::vector<Drone>& drones, std::vector<Alien>& aliens, std::vector<Overseer>& overseers)
+void Game::checkProjectiles(Rndr& rndr, Player& plr, Resource& src, std::vector<Laser>& plrProjectiles, std::vector<Laser>& enemyProjectiles, 
+	std::vector<Drone>& drones, std::vector<Alien>& aliens, std::vector<Overseer>& overseers, std::vector<Entity>& explosions, std::vector<Barrier>& barriers)
 {
-	checkPlrProjectile(rndr, plr, src, plrProjectiles, drones, aliens, overseers);
-	checkEnemyProjectile(rndr, plr, src, enemyProjectiles);
+	checkPlrProjectile(rndr, plr, src, plrProjectiles, drones, aliens, overseers, explosions, barriers);
+	checkEnemyProjectile(rndr, plr, src, enemyProjectiles, explosions, barriers);
 }
 
-void Game::checkPlrProjectile(Rndr& rndr, Player& plr, Resource& src, std::vector<Laser>& projectiles, 
-	std::vector<Drone>& drones, std::vector<Alien>& aliens, std::vector<Overseer>& overseers)
+void Game::checkPlrProjectile(Rndr& rndr, Player& plr, Resource& src, std::vector<Laser>& projectiles, std::vector<Drone>& drones, 
+	std::vector<Alien>& aliens, std::vector<Overseer>& overseers, std::vector<Entity>& explosions, std::vector<Barrier>& barriers)
 {
 	bool hit = false;
 	if (!projectiles.empty())
@@ -673,8 +824,11 @@ void Game::checkPlrProjectile(Rndr& rndr, Player& plr, Resource& src, std::vecto
 									std::cout << "+";
 									hit = true;
 									projectiles.erase(projectiles.begin() + plrProj);
-									if(!drones.empty())
+									if (!drones.empty())
+									{
+										explosions.push_back(Entity(drones[enemy].getPositionX(), drones[enemy].getPositionY()));
 										drones.erase(drones.begin() + enemy);
+									}
 									plr.incrScore(10);
 									Mix_PlayChannel(-1, src.getSndDroneDeath(), 0);
 								}
@@ -695,8 +849,11 @@ void Game::checkPlrProjectile(Rndr& rndr, Player& plr, Resource& src, std::vecto
 								{
 									hit = true;
 									projectiles.erase(projectiles.begin() + plrProj);
-									if(!aliens.empty())
+									if (!aliens.empty())
+									{
+										explosions.push_back(Entity(aliens[enemy].getPositionX(), aliens[enemy].getPositionY()));
 										aliens.erase(aliens.begin() + enemy);
+									}
 									plr.incrScore(20);
 									Mix_PlayChannel(-1, src.getSndAlienDeath(), 0);
 								}
@@ -705,7 +862,7 @@ void Game::checkPlrProjectile(Rndr& rndr, Player& plr, Resource& src, std::vecto
 					}
 					if (!overseers.empty())
 					{
-					for (int enemy = 0; enemy < overseers.size() && !hit; ++enemy)
+						for (int enemy = 0; enemy < overseers.size() && !hit; ++enemy)
 						{
 							if ((projectiles[plrProj].getPositionY() >= overseers[enemy].getPositionY() &&
 								projectiles[plrProj].getPositionY() <= (overseers[enemy].getHeight() + overseers[enemy].getPositionY())) ||
@@ -713,14 +870,49 @@ void Game::checkPlrProjectile(Rndr& rndr, Player& plr, Resource& src, std::vecto
 									(projectiles[plrProj].getPositionY() + projectiles[plrProj].getHeight()) <= (overseers[enemy].getPositionY() + overseers[enemy].getHeight())))
 							{
 								if ((projectiles[plrProj].getPositionX() >= overseers[enemy].getPositionX() && projectiles[plrProj].getPositionX() <= (overseers[enemy].getWidth() + overseers[enemy].getPositionX())
-									|| (projectiles[plrProj].getPositionX() + projectiles[plrProj].getWidth()) >= overseers[enemy].getPositionX() && (projectiles[plrProj].getPositionX() + projectiles[plrProj].getWidth()) <= (overseers[enemy].getWidth() + overseers[enemy].getPositionX()))) 
+									|| (projectiles[plrProj].getPositionX() + projectiles[plrProj].getWidth()) >= overseers[enemy].getPositionX() && 
+									(projectiles[plrProj].getPositionX() + projectiles[plrProj].getWidth()) <= (overseers[enemy].getWidth() + overseers[enemy].getPositionX()))) 
 								{
 									hit = true;
 									projectiles.erase(projectiles.begin() + plrProj);
-									if(!overseers.empty())
+									if (!overseers.empty())
+									{
+										explosions.push_back(Entity(overseers[enemy].getPositionX(), overseers[enemy].getPositionY()));
 										overseers.erase(overseers.begin() + enemy);
+									}
 									plr.incrScore(30);
 									Mix_PlayChannel(-1, src.getSndOverseerDeath(), 0);
+								}
+							}
+						}
+					}
+					if (!barriers.empty())
+					{
+						for (int tmpBarriers = 0; tmpBarriers < barriers.size() && !hit; ++tmpBarriers)
+						{
+							if ((projectiles[plrProj].getPositionY() >= barriers[tmpBarriers].getPositionY() &&
+								projectiles[plrProj].getPositionY() <= (barriers[tmpBarriers].getHeight() + barriers[tmpBarriers].getPositionY())) ||
+								((projectiles[plrProj].getPositionY() + projectiles[plrProj].getHeight()) >= barriers[tmpBarriers].getPositionY() &&
+									(projectiles[plrProj].getPositionY() + projectiles[plrProj].getHeight()) <= (barriers[tmpBarriers].getPositionY() + barriers[tmpBarriers].getHeight())))
+							{
+								if ((projectiles[plrProj].getPositionX() >= barriers[tmpBarriers].getPositionX() && projectiles[plrProj].getPositionX() <= (barriers[tmpBarriers].getWidth() + barriers[tmpBarriers].getPositionX())
+									|| (projectiles[plrProj].getPositionX() + projectiles[plrProj].getWidth()) >= barriers[tmpBarriers].getPositionX() &&
+									(projectiles[plrProj].getPositionX() + projectiles[plrProj].getWidth()) <= (barriers[tmpBarriers].getWidth() + barriers[tmpBarriers].getPositionX())))
+								{
+									hit = true;
+									if (!barriers.empty())
+									{
+										explosions.push_back(Entity(projectiles[plrProj].getPositionX() - 19, projectiles[plrProj].getPositionY()));
+										barriers[tmpBarriers].hit(projectiles[plrProj].getSpeed());
+										if (barriers[tmpBarriers].isDestroyed())
+										{
+											Mix_PlayChannel(-1, src.getBarrierDestr(), 0);
+											barriers.erase(barriers.begin() + tmpBarriers);
+										}
+										else
+											Mix_PlayChannel(-1, src.getBarrierHit(), 0);
+									}
+									projectiles.erase(projectiles.begin() + plrProj);
 								}
 							}
 						}
@@ -736,7 +928,7 @@ void Game::checkPlrProjectile(Rndr& rndr, Player& plr, Resource& src, std::vecto
 	}
 }
 
-void Game::checkEnemyProjectile(Rndr& rndr, Player& plr, Resource& src, std::vector<Laser>& projectiles)
+void Game::checkEnemyProjectile(Rndr& rndr, Player& plr, Resource& src, std::vector<Laser>& projectiles, std::vector<Entity>& explosions, std::vector<Barrier>& barriers)
 {
 	bool hit = false;
 
@@ -755,8 +947,40 @@ void Game::checkEnemyProjectile(Rndr& rndr, Player& plr, Resource& src, std::vec
 				{
 					hit = true;
 					projectiles.erase(projectiles.begin() + projectile);
+					explosions.push_back(Entity(plr.getPositionX(), plr.getPositionY()));
 					plr.hit(rndr);
 					Mix_PlayChannel(-1, src.getSndPlrHit(), 0);
+				}
+			}
+			if (!barriers.empty())
+			{
+				for (int tmpBarriers = 0; tmpBarriers < barriers.size() && !hit; ++tmpBarriers)
+				{
+					if ((projectiles[projectile].getPositionY() >= barriers[tmpBarriers].getPositionY() &&
+						projectiles[projectile].getPositionY() <= (barriers[tmpBarriers].getHeight() + barriers[tmpBarriers].getPositionY())) ||
+						((projectiles[projectile].getPositionY() + projectiles[projectile].getHeight()) >= barriers[tmpBarriers].getPositionY() &&
+							(projectiles[projectile].getPositionY() + projectiles[projectile].getHeight()) <= (barriers[tmpBarriers].getPositionY() + barriers[tmpBarriers].getHeight())))
+					{
+						if ((projectiles[projectile].getPositionX() >= barriers[tmpBarriers].getPositionX() && projectiles[projectile].getPositionX() <= (barriers[tmpBarriers].getWidth() + barriers[tmpBarriers].getPositionX())
+							|| (projectiles[projectile].getPositionX() + projectiles[projectile].getWidth()) >= barriers[tmpBarriers].getPositionX() &&
+							(projectiles[projectile].getPositionX() + projectiles[projectile].getWidth()) <= (barriers[tmpBarriers].getWidth() + barriers[tmpBarriers].getPositionX())))
+						{
+							hit = true;
+							if (!barriers.empty())
+							{
+								explosions.push_back(Entity(projectiles[projectile].getPositionX() - 19, projectiles[projectile].getPositionY()));
+								barriers[tmpBarriers].hit(projectiles[projectile].getSpeed());
+								if (barriers[tmpBarriers].isDestroyed())
+								{
+									Mix_PlayChannel(-1, src.getBarrierDestr(), 0);
+									barriers.erase(barriers.begin() + tmpBarriers);
+								}
+								else
+									Mix_PlayChannel(-1, src.getBarrierHit(), 0);
+							}
+							projectiles.erase(projectiles.begin() + projectile);
+						}
+					}
 				}
 			}
 		}
@@ -766,12 +990,11 @@ void Game::checkEnemyProjectile(Rndr& rndr, Player& plr, Resource& src, std::vec
 		if (hit)
 		{
 			std::cout << "PLAYER IS HIT\n";
-			SDL_Delay(1000);
 		}
 	}
 }
 
-void Game::animUpdate(Sprites& sprites, std::vector<Drone>& drones, std::vector<Alien>& aliens, std::vector<Overseer>& overseers, std::vector<Laser>& enemyProjectiles)
+void Game::animUpdate(Sprites& sprites, std::vector<Drone>& drones, std::vector<Alien>& aliens, std::vector<Overseer>& overseers, std::vector<Laser>& enemyProjectiles, std::vector<Entity>& explosions)
 {
 	for (auto& i : drones)
 	{
@@ -788,5 +1011,15 @@ void Game::animUpdate(Sprites& sprites, std::vector<Drone>& drones, std::vector<
 	for (auto& i : enemyProjectiles)
 	{
 		i.frameUpdate(sprites.getEnemyProjectileNumbSprites(i.getType()));
+	}
+	for (auto it = explosions.begin(); it != explosions.end();)
+	{
+		if ((*it).getSpritesN() >= sprites.getexplosionNumbSprites())
+			it = explosions.erase(it);
+		else
+		{
+			(*it).explUpdate(sprites.getexplosionNumbSprites());
+			++it;
+		}
 	}
 }

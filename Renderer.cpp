@@ -6,14 +6,17 @@
 #include "Renderer.h"
 #include "Resource.h"
 #include "Sprites.h"
+#include "Button.h"
 #include "Entity.h"
 #include "Player.h"
 #include "Drone.h"
 #include "Alien.h"
 #include "Overseer.h"
 #include "Laser.h"
+#include "Barrier.h"
 
-#define N 4
+#define N_MENU 4
+#define N_ABOUT 7
 #define BUTTON_SIZE 120
 #define BUTTON_OFFSET 20
 
@@ -29,7 +32,7 @@ bool Rndr::init()
 {
 	//Initializing
 	wndw = SDL_CreateWindow("Space Invaders", SDL_WINDOWPOS_UNDEFINED,
-		SDL_WINDOWPOS_UNDEFINED, SCREEN_W, SCREEN_H, SDL_WINDOW_FULLSCREEN_DESKTOP);
+		SDL_WINDOWPOS_UNDEFINED, SCREEN_W, SCREEN_H, SDL_WINDOW_FULLSCREEN);
 	/*wndw = SDL_CreateWindow("Space Invaders", SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOWPOS_UNDEFINED, SCREEN_W, SCREEN_H, 0);*/
 	srfc = SDL_GetWindowSurface(wndw);
@@ -81,52 +84,23 @@ bool Rndr::init()
 	return true;
 }
 
-void Rndr::renderMenu(Resource& src, int ch)	//Resources& media
+void Rndr::renderMenu(Resource& src, int ch, std::string* buttons, Button* bArr, int numbOfButtons)	//Resources& media
 {
-	/*SDL_RWops* rwop = SDL_RWFromFile("revAAA.jpg", "rb");
-	srfc = IMG_LoadJPG_RW(rwop);
-	SDL_Texture* texture = SDL_CreateTextureFromSurface(rndr, srfc);
-
-	SDL_RenderClear(rndr);
-	SDL_SetRenderDrawColor(rndr, 255, 255, 255, 0);
-
-	SDL_RenderCopy(rndr, texture, nullptr, nullptr);
-
-	SDL_RenderPresent(rndr);
-
-	SDL_FreeSurface(srfc);*/
-
 	int winWidth, winHeight;
 	std::string tmpstr;
-	std::string buttons[N] = {
-		u8"Начать  игру",
-		u8"Таблица  лидеров",
-		u8"Справка",
-		u8"Выход"
-	};
-
-	//SDL_GetWindowSize(wndw, &winWidth, &winHeight);
 
 	SDL_Texture* texture;
 	SDL_Rect SrcR;
 	SDL_Rect DestR;
+	SrcR.x = 0;
+	SrcR.y = 0;
 
 	SDL_RenderClear(rndr);
 	SDL_SetRenderDrawColor(rndr, 0, 0, 0, 0);
 	src.setCharSize(24);
-	
-	for (unsigned int i = 0; i < N; ++i)
+
+	for (unsigned int i = 0; i < numbOfButtons; ++i)
 	{
-		SrcR.x = 0;
-		SrcR.y = 0;
-		SrcR.w = src.getCharSize() * buttons[i].length();		//strlen(buttons[i]);
-		SrcR.h = 1.666 * src.getCharSize();
-
-		DestR.x = SCREEN_W / 2 - SrcR.w / 2;
-		DestR.y = SCREEN_H / 2 - 3 * SrcR.h / 2 - BUTTON_OFFSET + i * (SrcR.h + BUTTON_OFFSET);
-		DestR.w = src.getCharSize() * buttons[i].length();
-		DestR.h = 1.666 * src.getCharSize();
-
 		if (ch == i)
 		{
 			tmpstr = '>' + buttons[i];
@@ -140,8 +114,10 @@ void Rndr::renderMenu(Resource& src, int ch)	//Resources& media
 			return;
 		}
 
+		SrcR.w = bArr[i].getButtonPos()->w;
+		SrcR.h = bArr[i].getButtonPos()->h;
 		texture = SDL_CreateTextureFromSurface(rndr, srfc);
-		SDL_RenderCopy(rndr, texture, &SrcR, &DestR);
+		SDL_RenderCopy(rndr, texture, &SrcR, bArr[i].getButtonPos());
 		SDL_FreeSurface(srfc);
 		SDL_DestroyTexture(texture);
 	}
@@ -149,7 +125,7 @@ void Rndr::renderMenu(Resource& src, int ch)	//Resources& media
 	SDL_RenderPresent(rndr);
 }
 
-void Rndr::renderScoreBoard(Resource& src)
+void Rndr::renderScoreBoard(Resource& src, Button* button, std::string* str, int &ch)
 {
 	std::string tmpstr = u8"Лидеры";
 	SDL_Rect SrcR;
@@ -176,35 +152,60 @@ void Rndr::renderScoreBoard(Resource& src)
 
 	src.setCharSize(18);
 
-	for (int i = 0; i < 10 && !src.getStrings()[i].empty(); ++i)
+	for (int i = 0; i < src.getStrNumb(); ++i)
 	{
+		tmpstr = src.getStrings()[i];
+		tmpstr += u8"  -  " + std::to_string(src.getNumbers()[i]);
+
 		SrcR.x = 0;
 		SrcR.y = 0;
-		SrcR.w = src.getCharSize() * src.getStrings()[i].length();
+		SrcR.w = src.getCharSize() * tmpstr.length();
 		SrcR.h = 1.666 * src.getCharSize();
 
-		DestR.x = SCREEN_W / 2 - 250;		//SCREEN_W / 2 - SrcR.w / 2;
+		DestR.x = SCREEN_W / 2 - 250;
 		DestR.y += DestR.h + 20;
-		DestR.w = src.getCharSize() * src.getStrings()[i].length();
+		DestR.w = src.getCharSize() * tmpstr.length();
 		DestR.h = 1.666 * src.getCharSize();
-		srfc = TTF_RenderUTF8_Solid(src.getFont(), src.getStrings()[i].c_str(), { 255, 255, 255 });
+		srfc = TTF_RenderUTF8_Solid(src.getFont(), tmpstr.c_str(), { 255, 255, 255 });
 		texture = SDL_CreateTextureFromSurface(rndr, srfc);
 		SDL_RenderCopy(rndr, texture, &SrcR, &DestR);
 		SDL_FreeSurface(srfc);
 		SDL_DestroyTexture(texture);
 	}
 
+	if (ch == 0)
+	{
+		tmpstr = '>' + (*str);
+		srfc = TTF_RenderUTF8_Solid(src.getFont(), tmpstr.c_str(), { 50, 169, 86 });
+	}
+	else
+		srfc = TTF_RenderUTF8_Solid(src.getFont(), (*str).c_str(), { 255, 255, 255 });
+	if (srfc == nullptr)
+	{
+		printf("Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError());
+		return;
+	}
+	SrcR.w = (*button).getButtonPos()->w;
+	SrcR.h = (*button).getButtonPos()->h;
+	texture = SDL_CreateTextureFromSurface(rndr, srfc);
+	SDL_RenderCopy(rndr, texture, &SrcR, (*button).getButtonPos());
+	SDL_FreeSurface(srfc);
+	SDL_DestroyTexture(texture);
+
 	SDL_RenderPresent(rndr);
 }
 
-void Rndr::renderAbout(Resource& src, Sprites& sprites, int& n)
+void Rndr::renderAbout(Resource& src, Sprites& sprites, Button* button, std::string* str, int& n, int& ch)
 {
 	std::string tmpstr;
-	std::string buttons[N] = {
+	std::string buttons[N_ABOUT] = {
 		u8"Таблица  набора  очков",
 		u8"  очков.",
+		u8"Управление",
+		u8" движение  влево|вправо",
+		u8" выстрел",
+		u8" пауза|выход",
 		u8"Автор:  Решетов А.Е.",
-		u8"[Esc] для выхода"
 	};
 
 	SDL_Texture* texture;
@@ -221,7 +222,7 @@ void Rndr::renderAbout(Resource& src, Sprites& sprites, int& n)
 	SrcR.h = 1.666 * src.getCharSize();
 
 	DestR.x = SCREEN_W / 2 - SrcR.w / 2;
-	DestR.y = SCREEN_H / 2 - 200;
+	DestR.y = SCREEN_H / 2 - 300;
 	DestR.w = src.getCharSize() * buttons[0].length();
 	DestR.h = 1.666 * src.getCharSize();
 
@@ -233,13 +234,13 @@ void Rndr::renderAbout(Resource& src, Sprites& sprites, int& n)
 
 	src.setCharSize(18);
 
-	DestR.x = SCREEN_W / 2 - 36 - 60;
-	DestR.y = SCREEN_H / 2 - 100 + 1.666 * src.getCharSize() + 20;
+	DestR.x = SCREEN_W / 2 - 36 - 150;
+	DestR.y = SCREEN_H / 2 - 300 + 1.666 * src.getCharSize() + 20;
 	DestR.w = 36;
 	DestR.h = 24;
 	SDL_RenderCopy(rndr, src.getSpriteSheet(), sprites.getDroneSprite(n / 32), &DestR);
 	tmpstr = "- 10 " + buttons[1];
-	DestR.x = SCREEN_W / 2 - 50;
+	DestR.x = SCREEN_W / 2 - 140;
 	SrcR.w = src.getCharSize() * tmpstr.length();
 	SrcR.h = 1.666 * src.getCharSize();
 	DestR.w = src.getCharSize() * tmpstr.length();
@@ -250,13 +251,13 @@ void Rndr::renderAbout(Resource& src, Sprites& sprites, int& n)
 	SDL_FreeSurface(srfc);
 	SDL_DestroyTexture(texture);
 
-	DestR.x = SCREEN_W / 2 - 33 - 60;
-	DestR.y = SCREEN_H / 2 - 100 + 1.666 * src.getCharSize() + 2 * 20 + 24;
+	DestR.x = SCREEN_W / 2 - 33 - 150;
+	DestR.y = SCREEN_H / 2 - 300 + 1.666 * src.getCharSize() + 2 * 20 + 24;
 	DestR.w = 33;
 	DestR.h = 24;
 	SDL_RenderCopy(rndr, src.getSpriteSheet(), sprites.getAlienSprite(n / 32), &DestR);
 	tmpstr = "- 20 " + buttons[1];
-	DestR.x = SCREEN_W / 2 - 50;
+	DestR.x = SCREEN_W / 2 - 140;
 	SrcR.w = src.getCharSize() * tmpstr.length();
 	SrcR.h = 1.666 * src.getCharSize();
 	DestR.w = src.getCharSize() * tmpstr.length();
@@ -267,18 +268,95 @@ void Rndr::renderAbout(Resource& src, Sprites& sprites, int& n)
 	SDL_FreeSurface(srfc);
 	SDL_DestroyTexture(texture);
 
-	DestR.x = SCREEN_W / 2 - 24 - 60;
-	DestR.y = SCREEN_H / 2 - 100 + 1.666 * src.getCharSize() + 3 * 20 + (24 * 2);
+	DestR.x = SCREEN_W / 2 - 24 - 150;
+	DestR.y = SCREEN_H / 2 - 300 + 1.666 * src.getCharSize() + 3 * 20 + (24 * 2);
 	DestR.w = 24;
 	DestR.h = 24;
 	SDL_RenderCopy(rndr, src.getSpriteSheet(), sprites.getOverseerSprite(n / 32), &DestR);
 	tmpstr = "- 30 " + buttons[1];
-	DestR.x = SCREEN_W / 2 - 50;
+	DestR.x = SCREEN_W / 2 - 140;
 	SrcR.w = src.getCharSize() * tmpstr.length();
 	SrcR.h = 1.666 * src.getCharSize();
 	DestR.w = src.getCharSize() * tmpstr.length();
 	DestR.h = 1.666 * src.getCharSize();
 	srfc = TTF_RenderUTF8_Solid(src.getFont(), tmpstr.c_str(), { 255, 255, 255 });
+	texture = SDL_CreateTextureFromSurface(rndr, srfc);
+	SDL_RenderCopy(rndr, texture, &SrcR, &DestR);
+	SDL_FreeSurface(srfc);
+	SDL_DestroyTexture(texture);
+
+	tmpstr = buttons[2];
+	SrcR.w = src.getCharSize() * tmpstr.length();
+	SrcR.h = 1.666 * src.getCharSize();
+	DestR.x = SCREEN_W / 2 - SrcR.w / 2;
+	DestR.y = SCREEN_H / 2 - 1.666 * src.getCharSize() - 80;
+	DestR.w = src.getCharSize() * tmpstr.length();
+	DestR.h = 1.666 * src.getCharSize();
+	srfc = TTF_RenderUTF8_Solid(src.getFont(), tmpstr.c_str(), { 255, 255, 255 });
+	texture = SDL_CreateTextureFromSurface(rndr, srfc);
+	SDL_RenderCopy(rndr, texture, &SrcR, &DestR);
+	SDL_FreeSurface(srfc);
+	SDL_DestroyTexture(texture);
+	
+	//Arrows
+	SrcR.x = 0;
+	SrcR.y = 0;
+	SrcR.w = 120;
+	SrcR.h = 53;
+	DestR.x = SCREEN_W / 2 - SrcR.w / 2 - 150;
+	DestR.y = SCREEN_H / 2 - 70;
+	DestR.w = SrcR.w;
+	DestR.h = SrcR.h;
+	SDL_RenderCopy(rndr, src.getArrowKeys(), &SrcR, &DestR);
+	DestR.x += 10 + SrcR.w;
+	SrcR.w = src.getCharSize() * buttons[3].length();
+	SrcR.h = 1.666 * src.getCharSize();
+	DestR.y = SCREEN_H / 2 - 70 + SrcR.h / 2;
+	DestR.w = src.getCharSize() * buttons[3].length();
+	DestR.h = 1.666 * src.getCharSize();
+	srfc = TTF_RenderUTF8_Solid(src.getFont(), buttons[3].c_str(), { 255, 255, 255 });
+	texture = SDL_CreateTextureFromSurface(rndr, srfc);
+	SDL_RenderCopy(rndr, texture, &SrcR, &DestR);
+	SDL_FreeSurface(srfc);
+	SDL_DestroyTexture(texture);
+	//SpaceBar
+	SrcR.x = 0;
+	SrcR.y = 0;
+	SrcR.w = 400;
+	SrcR.h = 100;
+	DestR.x = SCREEN_W / 2 - SrcR.w / 2 - 150;
+	DestR.y = SCREEN_H / 2;
+	DestR.w = SrcR.w;
+	DestR.h = SrcR.h;
+	SDL_RenderCopy(rndr, src.getSpaceBar(), &SrcR, &DestR);
+	DestR.x += 10 + SrcR.w;
+	SrcR.w = src.getCharSize() * buttons[4].length();
+	DestR.y = DestR.y - 1.666 * src.getCharSize() / 2 + SrcR.h / 2;
+	SrcR.h = 1.666 * src.getCharSize();
+	DestR.w = src.getCharSize() * buttons[4].length();
+	DestR.h = 1.666 * src.getCharSize();
+	srfc = TTF_RenderUTF8_Solid(src.getFont(), buttons[4].c_str(), { 255, 255, 255 });
+	texture = SDL_CreateTextureFromSurface(rndr, srfc);
+	SDL_RenderCopy(rndr, texture, &SrcR, &DestR);
+	SDL_FreeSurface(srfc);
+	SDL_DestroyTexture(texture);
+	//Esc key
+	SrcR.x = 0;
+	SrcR.y = 0;
+	SrcR.w = 120;
+	SrcR.h = 120;
+	DestR.x = SCREEN_W / 2 - SrcR.w / 2 - 150;
+	DestR.y = SCREEN_H / 2 + 20 + 100;
+	DestR.w = SrcR.w;
+	DestR.h = SrcR.h;
+	SDL_RenderCopy(rndr, src.getEscKey(), &SrcR, &DestR);
+	DestR.x += 10 + SrcR.w;
+	SrcR.w = src.getCharSize() * buttons[5].length();
+	DestR.y = DestR.y - 1.666 * src.getCharSize() / 2 + SrcR.h / 2;
+	SrcR.h = 1.666 * src.getCharSize();
+	DestR.w = src.getCharSize() * buttons[5].length();
+	DestR.h = 1.666 * src.getCharSize();
+	srfc = TTF_RenderUTF8_Solid(src.getFont(), buttons[5].c_str(), { 255, 255, 255 });
 	texture = SDL_CreateTextureFromSurface(rndr, srfc);
 	SDL_RenderCopy(rndr, texture, &SrcR, &DestR);
 	SDL_FreeSurface(srfc);
@@ -286,17 +364,36 @@ void Rndr::renderAbout(Resource& src, Sprites& sprites, int& n)
 
 	SrcR.x = 0;
 	SrcR.y = 0;
-	SrcR.w = src.getCharSize() * buttons[2].length();
+	SrcR.w = src.getCharSize() * buttons[6].length();
 	SrcR.h = 1.666 * src.getCharSize();
 
 	DestR.x = SCREEN_W / 2;
-	DestR.y = SCREEN_H - 200;
-	DestR.w = src.getCharSize() * buttons[2].length();
+	DestR.y = SCREEN_H - 1.666 * src.getCharSize() - 10;
+	DestR.w = src.getCharSize() * buttons[6].length();
 	DestR.h = 1.666 * src.getCharSize();
 
-	srfc = TTF_RenderUTF8_Solid(src.getFont(), buttons[2].c_str(), { 255, 255, 255 });
+	srfc = TTF_RenderUTF8_Solid(src.getFont(), buttons[6].c_str(), { 255, 255, 255 });
 	texture = SDL_CreateTextureFromSurface(rndr, srfc);
 	SDL_RenderCopy(rndr, texture, &SrcR, &DestR);
+	SDL_FreeSurface(srfc);
+	SDL_DestroyTexture(texture);
+
+	if (ch == 0)
+	{
+		tmpstr = '>' + (*str);
+		srfc = TTF_RenderUTF8_Solid(src.getFont(), tmpstr.c_str(), { 50, 169, 86 });
+	}
+	else
+		srfc = TTF_RenderUTF8_Solid(src.getFont(), (*str).c_str(), { 255, 255, 255 });
+	if (srfc == nullptr)
+	{
+		printf("Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError());
+		return;
+	}
+	SrcR.w = (*button).getButtonPos()->w;
+	SrcR.h = (*button).getButtonPos()->h;
+	texture = SDL_CreateTextureFromSurface(rndr, srfc);
+	SDL_RenderCopy(rndr, texture, &SrcR, (*button).getButtonPos());
 	SDL_FreeSurface(srfc);
 	SDL_DestroyTexture(texture);
 
@@ -307,8 +404,8 @@ void Rndr::renderAbout(Resource& src, Sprites& sprites, int& n)
 		n = 0;
 }
 
-void Rndr::renderGame(Resource& src, Sprites& sprites, Player& plr, std::vector<Drone>& drones, std::vector<Alien>& aliens,
-	std::vector<Overseer>& overseers, std::vector<Laser>& plrProjectiles, std::vector<Laser>& enemyProjectiles)
+void Rndr::renderGame(Resource& src, Sprites& sprites, Player& plr, std::vector<Drone>& drones, std::vector<Alien>& aliens, std::vector<Overseer>& overseers, 
+	std::vector<Laser>& plrProjectiles, std::vector<Laser>& enemyProjectiles, std::vector<Entity>& explosions, std::vector<Barrier>& barriers)
 {
 	std::string scoreString = (std::to_string(plr.getScore())) + u8"  очков.";
 	std::string livesString = (std::to_string(plr.getLives())) + u8"  X  ";
@@ -377,6 +474,14 @@ void Rndr::renderGame(Resource& src, Sprites& sprites, Player& plr, std::vector<
 		//std::cout << i.getPosition().x << '\t' << i.getPosition().y << '\t' << i.getPosition().w << '\t' << i.getPosition().h << std::endl;
 		SDL_RenderCopy(rndr, src.getSpriteSheet(), sprites.getEnemyProjectileSprite(i.getSpritesN(), i.getType()), &i.getPosition());
 	}
+	for (auto& i : explosions)
+	{
+		SDL_RenderCopy(rndr, src.getSpriteSheet(), sprites.getExplosionSprites(i.getSpritesN()), &i.getPosition());
+	}
+	for (auto& i : barriers)
+	{
+		SDL_RenderCopy(rndr, src.getSpriteSheet(), sprites.getBarrierSprites(i.getSpritesN()), &i.getPosition());
+	}
 
 	SDL_RenderPresent(rndr);
 }
@@ -401,6 +506,33 @@ void Rndr::renderPause(Resource& src)
 	DestR.h = 1.666 * src.getCharSize();
 
 	srfc = TTF_RenderUTF8_Solid(src.getFont(), info.c_str(), { 50, 169, 86 });
+	texture = SDL_CreateTextureFromSurface(rndr, srfc);
+	SDL_RenderCopy(rndr, texture, &SrcR, &DestR);
+	SDL_FreeSurface(srfc);
+	SDL_DestroyTexture(texture);
+	SDL_RenderPresent(rndr);
+}
+
+void Rndr::renderSaveScoreBoard(Resource& src)
+{
+	SDL_Texture* texture;
+	std::string tmpstr = u8"Введите имя в консоль: ";
+	SDL_Rect SrcR;
+	SDL_Rect DestR;
+
+	SDL_RenderClear(rndr);
+	SDL_SetRenderDrawColor(rndr, 255, 255, 255, 0);
+
+	src.setCharSize(16);
+	SrcR.x = 0;
+	SrcR.y = 0;
+	SrcR.w = src.getCharSize() * tmpstr.length();
+	SrcR.h = 1.666 * src.getCharSize();
+	DestR.x = SCREEN_W / 2 - 260;
+	DestR.y = SCREEN_H / 2;
+	DestR.w = src.getCharSize() * tmpstr.length();
+	DestR.h = 1.666 * src.getCharSize();
+	srfc = TTF_RenderUTF8_Solid(src.getFont(), tmpstr.c_str(), { 50, 169, 86 });
 	texture = SDL_CreateTextureFromSurface(rndr, srfc);
 	SDL_RenderCopy(rndr, texture, &SrcR, &DestR);
 	SDL_FreeSurface(srfc);

@@ -14,6 +14,7 @@ public:
 
 	void init(Rndr& rndr);
 	char getType() { return type; }
+	int getSpeed() { return MOVEMENT_SPEED; }
 	bool chekBounds(Rndr& rndr);
 	MovDir getMovDir() { return lasDir; }
 

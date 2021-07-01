@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <SDL.h>
 #include <vector>
 #include "Renderer.h"
@@ -10,17 +10,21 @@ public:
 	~Sprites();
 
 	void init();
-	int getPlrNumbSprites() { return plrNumbSprites; }
-	int getDroneNumbSprites() { return droneNumbSprites; }
-	int getAlienNumbSprites() { return alienNumbSprites; }
-	int getOverseerNumbSprites() { return overseerNumbSprites; }
-	int getEnemyProjectileNumbSprites(char projType);
-	SDL_Rect* getPlrSprite(int n) { return &plrSprites[n]; }
-	SDL_Rect* getDroneSprite(int n) { return &droneSprites[n]; }
-	SDL_Rect* getAlienSprite(int n) { return &alienSprites[n]; }
-	SDL_Rect* getOverseerSprite(int n) { return &overseerSprites[n]; }
-	SDL_Rect* getProjectileSprite(int n) { return &projectileSprites[n]; }
-	SDL_Rect* getEnemyProjectileSprite(int n, char projSprite);
+	int getPlrNumbSprites() { return plrNumbSprites; }			//Возвращает кол-во спрайтов игрока
+	int getDroneNumbSprites() { return droneNumbSprites; }			//Возвращает кол-во спрайтов противника 1-го типа
+	int getAlienNumbSprites() { return alienNumbSprites; }			//Возвращает кол-во спрайтов противника 2-го типа
+	int getOverseerNumbSprites() { return overseerNumbSprites; }			//Возвращает кол-во спрайтов противника 3-го типа
+	int getEnemyProjectileNumbSprites(char projType);			//Возвращает кол-во спрайтов снарядов противника, на вход принимает тип противника
+	int getexplosionNumbSprites() { return explosionNumbSprites; }			//Возвращает кол-во спрайтов взрыва
+	int getBarrierNumbSprites() { return barrierNumbSprites; }
+	SDL_Rect* getPlrSprite(int n) { return &plrSprites[n]; }			//Возвращает координаты спрайта игрока
+	SDL_Rect* getDroneSprite(int n) { return &droneSprites[n]; }			//Возвращает координаты спрайта противника 1-го типа
+	SDL_Rect* getAlienSprite(int n) { return &alienSprites[n]; }			//Возвращает координаты спрайта противника 2-го типа
+	SDL_Rect* getOverseerSprite(int n) { return &overseerSprites[n]; }			//Возвращает координаты спрайта противника 3-го типа
+	SDL_Rect* getProjectileSprite(int n) { return &projectileSprites[n]; }			//Возвращает координаты спрайта снарядов игрока
+	SDL_Rect* getEnemyProjectileSprite(int n, char projSprite);			//Возвращает координаты спрайта снарядов противника
+	SDL_Rect* getExplosionSprites(int n) { return &explosionSprites[n]; }			//Возвращает координаты спрайта взрыва
+	SDL_Rect* getBarrierSprites(int n) { return &barrierSprites[n]; }
 
 private:
 	int plrNumbSprites;
@@ -39,4 +43,8 @@ private:
 	SDL_Rect* alLaserSprites = nullptr;
 	int overLaserNumbSprites;
 	SDL_Rect* overLaserSprites = nullptr;
+	int explosionNumbSprites;
+	SDL_Rect* explosionSprites = nullptr;
+	int barrierNumbSprites;
+	SDL_Rect* barrierSprites = nullptr;
 };
